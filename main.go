@@ -2,33 +2,34 @@ package main
 
 import (
 	gintransport "example/auth-services/internal/auth/transport/gin"
-	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
-)
 
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+)
 
 var secret = []byte("secret")
 
 func main() {
-	r := gin.Default()
+	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
+	dsn := "root:@tcp(127.0.0.1:3306)/auth_go_api?charset=utf8mb4&parseTime=true&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	// public route
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	r := gin.Default()
 
 	// protected route
 	auth := r.Group("/auth")
 	{
-		auth.POST("/login", login)
-		auth.POST("/register", gintransport.)
+		auth.POST("/login")
+		auth.POST("/register", gintransport.RegisterHandle(db))
 	}
-
-
 
 	r.Run(":3000") // listen and serve on 0.0.0.0:8080
 }
-

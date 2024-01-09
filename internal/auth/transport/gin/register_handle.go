@@ -1,29 +1,41 @@
 package gintransport
 
 import (
+	"example/auth-services/internal/auth/business"
+	"example/auth-services/internal/auth/storage"
+	"example/auth-services/model"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func RegisterHandle(db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var input RegisterInput
-		if err := c.ShouldBindJSON(&input); err != nil {
-			c.JSON(400, gin.H{
-				"message": err.Error(),
+		var data model.UserInput
+
+		if err := c.ShouldBindJSON(&data); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invalid request",
 			})
 			return
 		}
 
-		if err := Register(db, input); err != nil {
-			c.JSON(400, gin.H{
-				"message": err.Error(),
+		store := storage.NewStorage(db)
+
+		business := business.RegisterBusiness(store)
+
+		if err := business.RegisterBusiness(c.Request.Context(), &data); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
 			})
 			return
 		}
 
-		c.JSON(200, gin.H{
-			"message": "success",
+		c.JSON(http.StatusOK, gin.H{
+			"data": data,
 		})
-	
-}}
+
+	}
+
+}
