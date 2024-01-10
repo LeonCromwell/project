@@ -1,8 +1,8 @@
 package gintransport
 
 import (
-	"example/auth-services/internal/auth/business"
-	"example/auth-services/internal/auth/storage"
+	"example/auth-services/internal/module/auth/business"
+	"example/auth-services/internal/module/auth/storage"
 	"example/auth-services/model"
 	"net/http"
 

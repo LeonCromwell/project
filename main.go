@@ -1,7 +1,7 @@
 package main
 
 import (
-	gintransport "example/auth-services/internal/auth/transport/gin"
+	gintransport "example/auth-services/internal/module/auth/transport/gin"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +29,7 @@ func main() {
 	{
 		auth.POST("/login")
 		auth.POST("/register", gintransport.RegisterHandle(db))
+		auth.POST("/vertify", gintransport.VertifyHandle(db))
 	}
 
 	r.Run(":3000") // listen and serve on 0.0.0.0:8080
