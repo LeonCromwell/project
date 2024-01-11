@@ -9,6 +9,7 @@ import (
 
 type Vertify interface {
 	GetVertifyCodeByEmail(ctx context.Context, email string) (vertifyCode *string, err error)
+	SetStateAuth(ctx context.Context, email string, state int) error
 }
 
 type vertifyBusiness struct {
@@ -28,5 +29,8 @@ func (v *vertifyBusiness) VertifyBusiness(ctx context.Context, data *model.Verti
 		return errors.New("Wrong code")
 	}
 
+	if err := v.storage.SetStateAuth(ctx, data.Email, 1); err != nil {
+		return err
+	}
 	return nil
 }

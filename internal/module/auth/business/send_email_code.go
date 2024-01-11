@@ -2,12 +2,18 @@ package business
 
 import (
 	"context"
+	"errors"
+
 	"example/auth-services/internal/pkg/auth"
 	"example/auth-services/internal/pkg/email"
 	"example/auth-services/model"
+
+	"gorm.io/gorm"
 )
 
 type SendCode interface {
+	GetVertifyCodeByEmail(ctx context.Context, email string) (vertifyCode *string, err error)
+	UpdateVertifyCode(ctx context.Context, data *model.VertifyInput) error
 	CreateNewCode(ctx context.Context, data *model.VertifyInput) error
 }
 
@@ -38,9 +44,27 @@ func (s *sendCodeBusiness) SendCode(ctx context.Context, data *model.VertifyInpu
 		return err
 	}
 
-	if err := s.storage.CreateNewCode(ctx, data); err != nil {
+	if err != nil {
 		return err
 	}
+
+	vertifyCode, err := s.storage.GetVertifyCodeByEmail(ctx, data.Email)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound); vertifyCode == nil {
+			if err := s.storage.CreateNewCode(ctx, data); err != nil {
+				return err
+			}
+			return nil
+			
+		}
+	}else {
+		if err := s.storage.UpdateVertifyCode(ctx, data); err != nil {
+			return err
+		}
+	}
+
+	
 
 	return nil
 }
