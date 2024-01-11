@@ -3,6 +3,7 @@ package business
 import (
 	"context"
 	"errors"
+	"example/auth-services/internal/pkg/auth"
 	"example/auth-services/model"
 )
 
@@ -23,7 +24,7 @@ func (v *vertifyBusiness) VertifyBusiness(ctx context.Context, data *model.Verti
 		return err
 	}
 
-	if data.Code != *vertifyCode {
+	if !auth.VerifyCode(data.Code, *vertifyCode) {
 		return errors.New("Wrong code")
 	}
 
