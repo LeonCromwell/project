@@ -3,11 +3,13 @@ package business
 import (
 	"context"
 	"errors"
+	"os"
 
 	"example/auth-services/internal/pkg/auth"
 	"example/auth-services/internal/pkg/email"
 	"example/auth-services/model"
 
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
@@ -26,6 +28,16 @@ func SendCodeBusiness(storage SendCode) *sendCodeBusiness {
 }
 
 func (s *sendCodeBusiness) SendCode(ctx context.Context, data *model.VertifyInput) error {
+	err := godotenv.Load("app.env")
+	if err != nil {
+		return err
+	}
+
+	var (
+		email_sender_name     = os.Getenv("EMAIL_SENDER_NAME")
+		sender_email_address  = os.Getenv("SENDER_EMAIL_ADDRESS")
+		sender_email_password = os.Getenv("EMAIL_SENDER_PASSWORD")
+	)
 	// generate code
 	code, err := auth.CreateVerificationCode()
 	if err != nil {
@@ -40,7 +52,7 @@ func (s *sendCodeBusiness) SendCode(ctx context.Context, data *model.VertifyInpu
 		<h2>` + code + `</h2>
 	`
 	// send email
-	if err := email.NewGmailSender("AUTH GO TEST", "mailyhai814@gmail.com", "xnog anph lvqy tfga").SendEmail("A test email", content, []string{data.Email}, nil, nil); err != nil {
+	if err := email.NewGmailSender(email_sender_name, sender_email_address, sender_email_password).SendEmail("A test email", content, []string{data.Email}, nil, nil); err != nil {
 		return err
 	}
 
@@ -56,15 +68,13 @@ func (s *sendCodeBusiness) SendCode(ctx context.Context, data *model.VertifyInpu
 				return err
 			}
 			return nil
-			
+
 		}
-	}else {
+	} else {
 		if err := s.storage.UpdateVertifyCode(ctx, data); err != nil {
 			return err
 		}
 	}
-
-	
 
 	return nil
 }

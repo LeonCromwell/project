@@ -11,7 +11,7 @@ import (
 )
 
 type Register interface {
-	GetUserByEmail(ctx context.Context, email string) (id *int, err error)
+	GetUserByEmail(ctx context.Context, email string) (user *model.User, err error)
 	CreateNewUser(ctx context.Context, data *model.UserInput) error
 }
 
@@ -24,14 +24,14 @@ func RegisterBusiness(storage Register) *registerBusiness {
 }
 
 func (r *registerBusiness) RegisterBusiness(ctx context.Context, data *model.UserInput) error {
-	existUser, err := r.storage.GetUserByEmail(ctx, data.Email)
+	user1, err := r.storage.GetUserByEmail(ctx, data.Email)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return err
 		}
 	}
 
-	if existUser != nil {
+	if user1 != nil {
 		return errors.New("Email already exist")
 	}
 

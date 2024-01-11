@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -13,6 +13,14 @@ import (
 var secret = []byte("secret")
 
 func main() {
+	err := godotenv.Load("app.env")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+
+
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
 	dsn := "root:@tcp(127.0.0.1:3306)/auth_go_api?charset=utf8mb4&parseTime=true&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
