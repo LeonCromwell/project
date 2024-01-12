@@ -27,3 +27,7 @@ type UserLoginInput struct {
 	Email        string `json:"email"`
 	Hashpassword string `json:"hashpassword"`
 }
+
+func (UserLoginInput) TableName() string {
+	return User{}.TableName()
+}
