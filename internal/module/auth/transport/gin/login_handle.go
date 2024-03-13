@@ -25,7 +25,13 @@ func LoginHandle(db *gorm.DB) func(c *gin.Context){
 
 		var token,refreshToken, err = business.Login(c.Request.Context(), user)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Email or password is wrong"})
+			// if err.Error() == "User not active" {
+			// 	c.JSON(http.StatusBadRequest, gin.H{"error": "User not active"})
+			// 	return
+			// }
+			// c.JSON(http.StatusBadRequest, gin.H{"error": "Email or password is wrong"})
+			// return
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}	
 

@@ -1,13 +1,12 @@
 package main
 
 import (
+	Config "example/auth-services/config"
 	gintransport "example/auth-services/internal/module/auth/transport/gin"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 var secret = []byte("secret")
@@ -19,16 +18,13 @@ func main() {
 		return
 	}
 
-
-
-	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := "root:@tcp(127.0.0.1:3306)/auth_go_api?charset=utf8mb4&parseTime=true&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
+	db, err := Config.Connect();
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
+
+	
 
 	r := gin.Default()
 
@@ -38,7 +34,7 @@ func main() {
 		auth.POST("/login", gintransport.LoginHandle(db))
 		auth.POST("/register", gintransport.RegisterHandle(db))
 		auth.POST("/vertify", gintransport.VertifyHandle(db))
-		auth.POST("/vertify/sendcode", gintransport.SendCodeHandle(db))
+		// auth.POST("/vertify/sendcode", gintransport.SendCodeHandle(db))
 		auth.GET("/refresh_token", gintransport.RefreshTokenHandle())
 	}
 

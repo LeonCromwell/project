@@ -1,12 +1,15 @@
 package model
 
-import "example/auth-services/common"
+import (
+	"example/auth-services/common"
+)
 
 type User struct {
 	common.Sqlmodel
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Hashpassword string `json:"hashpassword"`
+	Authenticated int `json:"authenticated" gorm:"default:0" ` 
 }
 
 func (User) TableName() string {
