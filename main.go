@@ -9,8 +9,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var secret = []byte("secret")
-
 func main() {
 	err := godotenv.Load("app.env")
 	if err != nil {
@@ -34,8 +32,8 @@ func main() {
 		auth.POST("/login", gintransport.LoginHandle(db))
 		auth.POST("/register", gintransport.RegisterHandle(db))
 		auth.POST("/vertify", gintransport.VertifyHandle(db))
-		// auth.POST("/vertify/sendcode", gintransport.SendCodeHandle(db))
 		auth.GET("/refresh_token", gintransport.RefreshTokenHandle())
+		auth.GET("/verify_token", gintransport.VerifyTokenHandle())
 	}
 
 	r.Run(":3000") // listen and serve on 0.0.0.0:8080

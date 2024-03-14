@@ -33,7 +33,7 @@ func RegisterHandle(db *gorm.DB) func(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"data": data,
+			"message": "Send code successfully",
 		})
 
 	}

@@ -64,9 +64,48 @@ func SignRefreshToken(userId int) (token string, err error) {
 
 }
 
-// func VerifyAccessToken(tokenString string) (userId int, err error) {
+func VerifyToken(tokenString string) (intUserId *int, err error) {
+	err = godotenv.Load("app.env")
+	if err != nil {
+		return nil, err
+	}
+	var SecretKey = os.Getenv("ACCESS_KEY_SECRET")
 
-// }
+	claims := jwt.MapClaims{}
+	
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SecretKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	// Lấy thời gian hết hạn từ claims
+	expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
+
+	// Kiểm tra xem token có hết hạn chưa
+	if time.Now().After(expirationTime) {
+		return nil, errors.New("token is expired")
+	} 
+
+	userId, ok := claims["userId"].(float64)
+	if !ok {
+		return nil, errors.New("invalid token")
+	
+	}
+
+	intuserId := int(userId)
+
+	return &intuserId, nil
+
+
+}
+
 
 func RefreshToken(tokenString string) (accessToken *string, err error) {
 	err = godotenv.Load("app.env")
@@ -87,7 +126,7 @@ func RefreshToken(tokenString string) (accessToken *string, err error) {
 	}
 
 	if !token.Valid {
-		return nil, errors.New("Invalid token")
+		return nil, errors.New("invalid token")
 	}
 
 	// Lấy thời gian hết hạn từ claims
@@ -95,7 +134,7 @@ func RefreshToken(tokenString string) (accessToken *string, err error) {
 
 	// Kiểm tra xem token có hết hạn chưa
 	if time.Now().After(expirationTime) {
-		return nil, errors.New("Token is expired.")
+		return nil, errors.New("token is expired")
 	} 
 	var jwtToken = jwt.New(jwt.SigningMethodHS256)
 
@@ -104,7 +143,7 @@ func RefreshToken(tokenString string) (accessToken *string, err error) {
 	tokenString, err = jwtToken.SignedString([]byte(SecretAccessKey))
 
 	if err != nil {
-		return nil, errors.New("Error in generating token")
+		return nil, errors.New("error in generating token")
 	}
 
 	return &tokenString, nil

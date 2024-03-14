@@ -34,6 +34,5 @@ func VertifyHandle(db *gorm.DB) func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Vertify success",
 		})
-		return
 	}
 }
