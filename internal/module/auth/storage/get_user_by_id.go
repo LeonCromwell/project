@@ -5,9 +5,9 @@ import (
 	"example/auth-services/model"
 )
 
-func (s *sqlStorage) GetUserByID(ctx context.Context, id int) (*model.User, error) {
-	var user model.User
-	if err := s.db.Where("id = ?", id).First(&user, id).Error; err != nil {
+func (s *sqlStorage) GetUserByID(ctx context.Context, id int) (*model.UserOutPut, error) {
+	var user model.UserOutPut
+	if err := s.db.Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 

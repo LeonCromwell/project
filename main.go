@@ -34,8 +34,10 @@ func main() {
 		auth.POST("/vertify", gintransport.VertifyHandle(db))
 		auth.GET("/refresh_token", gintransport.RefreshTokenHandle())
 		auth.GET("/verify_token", gintransport.VerifyTokenHandle())
+		auth.GET("/get_user", gintransport.GetUserHandler(db))
+		auth.POST("/update_user", gintransport.UpdateUserHandle(db))
 	}
 
-	r.Run(":3000") // listen and serve on 0.0.0.0:8080
+	r.Run(":3000") 
 }
 

@@ -107,13 +107,12 @@ func VerifyToken(tokenString string) (intUserId *int, err error) {
 }
 
 
-func RefreshToken(tokenString string) (accessToken *string, err error) {
+func RefreshToken(tokenString string) (accessToken string, err error) {
 	err = godotenv.Load("app.env")
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	var SecretKey = os.Getenv("REFRESH_KEY_SECRET")
-	var SecretAccessKey = os.Getenv("ACCESS_KEY_SECRET")
 
 	claims := jwt.MapClaims{}
 
@@ -122,31 +121,33 @@ func RefreshToken(tokenString string) (accessToken *string, err error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if !token.Valid {
-		return nil, errors.New("invalid token")
+		return "", errors.New("invalid token")
 	}
 
 	// Lấy thời gian hết hạn từ claims
 	expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
-
+	userID, ok := claims["userId"].(float64)
+	
 	// Kiểm tra xem token có hết hạn chưa
 	if time.Now().After(expirationTime) {
-		return nil, errors.New("token is expired")
-	} 
-	var jwtToken = jwt.New(jwt.SigningMethodHS256)
-
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	tokenString, err = jwtToken.SignedString([]byte(SecretAccessKey))
+		return "", errors.New("token is expired")
+	}
+	if !ok {
+		return "", errors.New("invalid token")
+	
+	}
+ 
+	accessToken, err = SignAccessToken(int(userID))
 
 	if err != nil {
-		return nil, errors.New("error in generating token")
+		return "", err
 	}
 
-	return &tokenString, nil
+	return accessToken, nil
 
 
 }
