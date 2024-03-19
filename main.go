@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -22,9 +23,21 @@ func main() {
 		return
 	}
 
-	
-
 	r := gin.Default()
+	c := cors.New(cors.Options{
+		AllowedOrigins:     []string{"*"},
+		AllowCredentials: true,
+		AllowedMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"}, // Các HTTP methods được phép
+		AllowedHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Access-Token"},
+		ExposedHeaders:     []string{"Content-Length"},
+		MaxAge: 86400, // Đảm bảo client không cần phải kiểm tra preflight thường xuyên
+	})
+
+	r.Use(func (ctx *gin.Context) {
+		c.HandlerFunc(ctx.Writer, ctx.Request)
+		ctx.Next()
+		
+	})
 
 	// protected route
 	auth := r.Group("/auth")
@@ -38,6 +51,6 @@ func main() {
 		auth.POST("/update_user", gintransport.UpdateUserHandle(db))
 	}
 
-	r.Run(":3000") 
+	r.Run(":5000") 
 }
 
