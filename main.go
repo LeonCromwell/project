@@ -28,7 +28,7 @@ func main() {
 		AllowedOrigins:     []string{"*"},
 		AllowCredentials: true,
 		AllowedMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"}, // Các HTTP methods được phép
-		AllowedHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Access-Token"},
+		AllowedHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Access-Token", "Refresh-token"},
 		ExposedHeaders:     []string{"Content-Length"},
 		MaxAge: 86400, // Đảm bảo client không cần phải kiểm tra preflight thường xuyên
 	})
