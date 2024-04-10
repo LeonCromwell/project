@@ -1,6 +1,6 @@
 FROM golang:1.21-alpine 
 # Set destination for COPY
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY . .
 

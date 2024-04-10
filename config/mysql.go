@@ -20,7 +20,7 @@ func Connect() (*gorm.DB, error) {
 dsn := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASS") + "@tcp("+ os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
 db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-if (err != nil && err.Error() == "Error 1049 (42000): Unknown database 'auth_go_api'" ) {
+if (err != nil && err.Error() == "Error 1049 (42000): Unknown database '"+ os.Getenv("DB_NAME") + "'"){
 	
 		dsn1 := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASS") + "@tcp("+ os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/?charset=utf8mb4&parseTime=True&loc=Local"
 		db, err = gorm.Open(mysql.Open(dsn1), &gorm.Config{})
